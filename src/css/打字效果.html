@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>打字删除效果</title>
+</head>
+<style>
+  #textPrint {
+    font-size: 28px;
+    /* text-align: center; */
+    position: absolute;
+    top: 45%;
+    left: 45%;
+  }
+</style>
+<body>
+  <p id="textPrint">.</p>
+</body>
+<script>
+  const printText = {
+  line: [
+    "洛杉矶",
+    "尔湾",
+    "西雅图",
+    "费城",
+    "匹兹堡",
+    "图森",
+    "奥斯汀",
+    "圣地亚哥",
+    "旧金山",
+  ],
+  from: 0,
+  end: 9,
+  [Symbol.iterator]() {
+    return {
+      currentText: "",
+      count: 0,
+      from: this.from,
+      end: this.end,
+      line: this.line,
+      itemLen: 0,
+      next() {
+        if (this.from < this.end) {
+          if (this.count < this.line[this.from].length + 1) {
+            this.itemLen = this.line[this.from].length
+            this.currentText += this.line[this.from].substring(
+              this.count,
+              this.count + 1
+            )
+            this.count++
+          }
+          if (this.count >= this.itemLen + 1 && this.itemLen > 0) {
+            // if (this.count !== this.itemLen) {
+            this.currentText = this.currentText.substring(0, this.itemLen - 1)
+            this.itemLen--
+            // }
+          }
+          if (this.itemLen === 0) {
+            this.count = 0
+            this.currentText = ""
+            this.from++
+          }
+          // else {
+          //   this.count = 0
+          //   this.currentText = ""
+          //   this.from++
+          // }
+          return {
+            done: false,
+            value: this.currentText,
+          }
+        }
+        this.from = 0
+        return {
+          done: true,
+          value: this.currentText,
+        }
+      },
+    }
+  },
+}
+  const textDom = document.getElementById('textPrint')
+  const  iterator = printText[Symbol.iterator]()
+  const print = () => {
+    const obj = iterator.next()
+    textDom.innerText = obj.value
+    if (obj.done) {
+      clearInterval(timer)
+    }
+  }
+  let timer = setInterval(print, 300)
+</script>
+</html>
